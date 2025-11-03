@@ -6,15 +6,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// --- CORRECCIÓN: Habilitar CORS ---
-// Esto permite que tu frontend (ej. en localhost:4200) se comunique con este backend.
-const corsOptions = {
-    origin: 'http://localhost:4200',
-    optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
-// --- FIN DE LA CORRECCIÓN ---
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -30,7 +22,13 @@ app.get('/', (req, res) => {
   res.json({ message: 'Servidor de la Biblioteca funcionando' });
 });
 
-// Rutas de la aplicación
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
+});
+
 const libroRoutes = require('./routes/libro.route');
 app.use('/api/libros', libroRoutes);
 
@@ -40,10 +38,9 @@ app.use('/api/usuarios', usuarioRoutes);
 const prestamoRoutes = require('./routes/prestamo.route');
 app.use('/api/prestamos', prestamoRoutes);
 
-const authRoutes = require('./routes/auth.route');
-app.use('/api/auth', authRoutes);
-
 app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
-  console.log('🌐 CORS habilitado para: http://localhost:4200');
 });
+
+const authRoutes = require('./routes/auth.route');
+app.use('/api/auth', authRoutes);
