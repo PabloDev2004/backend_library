@@ -12,7 +12,12 @@ const usuarioSchema = new mongoose.Schema({
     required: [true, 'El correo es obligatorio'],
     lowercase: true,
     unique: true, // Evita duplicados
-    trim: true
+    trim: true,
+
+    match: [
+      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+      'Por favor ingresa un correo válido'
+    ]
   },
   rut: {
     type: String,
